@@ -72,7 +72,7 @@ def main():
 
     # suggest end station (create tree with stations in range) -- suggest another if user not satisfied
     rando = random.choice(stns_in_range)
-    print(f"I suggest you bike to the {rando[0]['name']} station, which is {round(rando[1], 2)}km away.")
+    print(f"I suggest you bike to the {rando[0]['name']} station, which is {round(rando[1], 2)}km away.\nThere are currently {rando[0]['empty_slots']} empty docks.")
 
     # suggest POI near end station and generate google maps
     coord_search = str(rando[0]['longitude']) +', '+ str(rando[0]['latitude'])
