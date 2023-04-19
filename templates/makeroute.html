@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8"/>
+    <title>Create a Route</title>
+</head>
+<body>
+    <h1>Yay!</h1>
+    <p>There is a bike-share system near you, called {{networkname}}!
+    </p>
+    <p>The closest station to you is {{closeststn['name']}}.</br>
+        This station is {{lowestdistance}}km away. </br>
+        There are currently {{closeststn['free_bikes']}} free bikes.
+    </p>
+    <p>
+        I suggest you bike to the {{rando[0]['name']}} station, which is {{rando_distance}}km away.</br>
+        There are currently {{rando[0]['empty_slots']}} empty docks.
+    </p>
+    <p>You should also check out this place by your endpoint:</br>
+        {{poi_name}}</br>
+        {% if poi_type%}
+        Category: {{poi_type}}</p>
+        {% endif %}
+    <p>
+        <a href="{{gmaps_url}}" target="_blank" rel="noopener noreferrer">Click here to view a Google Map of your suggested route!</a>
+    </p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>City Bike Explorer</title>
+</head>
+
+<body>
+    <h1>Welcome to City Bike Explorer!</h1>
+    <h2>Please enter the information below to create a bike route!</h2>
+    <form action="/createroute" method="POST">
+      <p>
+        Your current city: <input name="city" type="text"/><br/><br/><br/>
+        Starting address: <input name="address" type="text"/><br/><br/><br/>
+        Desired bike route length (in km): <input name="desired_length" type="text"/><br/><br/><br/>
+      </p>
+      <input type="submit" value="Submit Form"/>
+    </form>
+  </body>
+
+  </html>
