@@ -13,8 +13,8 @@
         There are currently {{closeststn['free_bikes']}} free bikes.
     </p>
     <p>
-        I suggest you bike to the {{rando[0]['name']}} station, which is {{rando_distance}}km away.</br>
-        There are currently {{rando[0]['empty_slots']}} empty docks.
+        I suggest you bike to the {{choice[0]['name']}} station, which is {{choice_distance}}km away.</br>
+        There are currently {{choice[0]['empty_slots']}} empty docks.
     </p>
     <p>You should also check out this place by your endpoint:</br>
         {{poi_name}}</br>
@@ -23,6 +23,22 @@
         {% endif %}
     <p>
         <a href="{{gmaps_url}}" target="_blank" rel="noopener noreferrer">Click here to view a Google Map of your suggested route!</a>
+    </p>
+    <p> Would you like to see other routes of similar lengths?
+        <form action="/viewroutes" method="POST">
+            <p>
+              <input type="radio" name="options" id="yes" value="yes"> Yes <br>
+              <input type="radio" name="options" id="no" value="no"> No <br>
+            </p>
+            <p>
+                <input type="checkbox" name="newlength" id="similar" value="similar"> Routes of similar length <br>
+                <input type="checkbox" name="newlength" id="longer" value="longer"> Longer routes <br>
+            </p>
+            <input type="submit" value="Submit Form"/>
+          </form>
+    </p>
+    <p>
+        <a href="/">Go back to the homepage</a>
     </p>
 </body>
 </html>

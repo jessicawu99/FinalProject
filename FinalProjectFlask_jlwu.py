@@ -7,8 +7,8 @@
 import requests
 import json
 import geopy.distance
-import random
 from flask import Flask, render_template, request
+from treelib import Node, Tree
 
 app = Flask(__name__)
 
@@ -16,6 +16,7 @@ GEOCODING_KEY = 'pk.eyJ1IjoiamVzc2ljYWx3dSIsImEiOiJjbGdhMmJjYmIwdXAxM2VwOTNzNzhs
 GEOCODING_BASE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
 CITYBIKE_BASE_URL = 'http://api.citybik.es/v2/networks/'
 NETWORKS_CACHE_FILENAME = 'networks_cache.json'
+TREE = ()
 
 def open_cache(cache_filename):
     ''' opens the cache file if it exists and loads the JSON into
@@ -82,6 +83,9 @@ def create_coordinates_json(address):
 def calculate_distance(coord1, coord2):
     return geopy.distance.geodesic(coord1, coord2).km
 
+def print_tree(tree):
+    return [tree[node].tag for node in tree.expand_tree(mode=Tree.DEPTH)]
+
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -127,27 +131,47 @@ def create_route():
                                    networkname = network_name,
                                    closeststn = closest_stn)
 
-            # suggest end station, maybe also make tree here
-            rando = random.choice(stns_in_range)
+            # suggest end station
+            choice = stns_in_range[0]
 
             # suggest POI near end station and generate google maps
-            coord_search = str(rando[0]['longitude']) +', '+ str(rando[0]['latitude'])
+            coord_search = str(choice[0]['longitude']) +', '+ str(choice[0]['latitude'])
             coord_url = GEOCODING_BASE_URL + coord_search + '.json?types=poi&limit=1&access_token=' + GEOCODING_KEY
             poi = create_json(coord_url)['features'][0]
             poi_name = poi['place_name']
             poi_type = poi.get('properties').get('category')
 
             origin_coord = str(closest_stn['latitude']) +', '+ str(closest_stn['longitude'])
-            dest_coord = str(rando[0]['latitude']) +', '+ str(rando[0]['longitude'])
+            dest_coord = str(choice[0]['latitude']) +', '+ str(choice[0]['longitude'])
             gmaps_url = f"https://www.google.com/maps/dir/?api=1&origin={origin_coord}&destination={dest_coord}&travelmode=bicycling"
+
+            # tree = Tree()
+            # tree.create_node(address, address)
+            # tree.create_node(str(desired_length), str(desired_length), parent=address)
+            # tree.create_node(str(desired_length+1), str(desired_length+1), parent=address)
+            # tree = print_tree(tree)
+
+            more_stns = []
+            for station in stations:
+                rt_length = calculate_distance((station['latitude'], station['longitude']), current_coord)
+                if rt_length <= desired_length + 1.5 and rt_length >= desired_length + 0.5 and station['empty_slots'] > 0:
+                    more_stns.append([station, rt_length])
+            if len(more_stns) > 1 and len(stns_in_range) > 2:
+                TREE.append(
+                    address, (
+                        (str(desired_length), (stns_in_range[1], stns_in_range[2])),
+                        (str(desired_length + 1), (more_stns[0], more_stns[1]))
+                    )
+                )
+
 
             return render_template('makeroute.html',
                                    networkname = network_name,
                                    closeststn = closest_stn,
                                    lowestdistance = round(lowest_distance, 2),
                                    stns_in_range = stns_in_range,
-                                   rando = rando,
-                                   rando_distance = round(rando[1], 2),
+                                   choice = choice,
+                                   choice_distance = round(choice[1], 2),
                                    poi_name = poi_name,
                                    poi_type = poi_type,
                                    gmaps_url = gmaps_url)
@@ -156,6 +180,11 @@ def create_route():
     if found_network == 'no':
         return render_template('nonetwork.html')
 
+
+@app.route('/viewroute', methods=['POST'])
+def view_route():
+
+    return render_template('seeroutes.html')
 
 if __name__ == '__main__':
     # creating list of bike networks if not yet cached
