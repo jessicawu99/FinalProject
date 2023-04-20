@@ -8,7 +8,6 @@ import requests
 import json
 import geopy.distance
 from flask import Flask, render_template, request
-from treelib import Node, Tree
 
 app = Flask(__name__)
 
@@ -83,9 +82,6 @@ def create_coordinates_json(address):
 def calculate_distance(coord1, coord2):
     return geopy.distance.geodesic(coord1, coord2).km
 
-def print_tree(tree):
-    return [tree[node].tag for node in tree.expand_tree(mode=Tree.DEPTH)]
-
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -93,17 +89,20 @@ def index():
 @app.route('/createroute', methods=['POST'])
 def create_route():
     city = request.form['city']
-    found_network = 'no'
+    address = request.form['address']
+    desired_length = request.form['desired_length']
+
+    if type(desired_length) != float or not city or not address or not desired_length:
+        return render_template('moreinfo.html')
+
     for place in bike_cities:
         if city.lower() in place:
-            found_network = 'yes'
             idx = bike_cities.index(place)
             network_name = bike_networks[idx]['name']
             # found network, now getting id and creating stations list
             network_id = bike_networks[idx]['id']
             stations = create_json(CITYBIKE_BASE_URL + network_id)['network']['stations']
 
-            address = request.form['address']
             current_coord = create_coordinates_json(address)
 
             # telling user closest station
@@ -118,7 +117,10 @@ def create_route():
                         closest_stn = station
 
             # create list of stations in range
-            desired_length = float(request.form['desired_length'])
+            try:
+                desired_length = float(request.form['desired_length'])
+            except:
+                desired_length = 1.0
             stns_in_range = []
             for station in stations:
                 rt_length = calculate_distance((station['latitude'], station['longitude']), current_coord)
@@ -145,12 +147,6 @@ def create_route():
             dest_coord = str(choice[0]['latitude']) +', '+ str(choice[0]['longitude'])
             gmaps_url = f"https://www.google.com/maps/dir/?api=1&origin={origin_coord}&destination={dest_coord}&travelmode=bicycling"
 
-            # tree = Tree()
-            # tree.create_node(address, address)
-            # tree.create_node(str(desired_length), str(desired_length), parent=address)
-            # tree.create_node(str(desired_length+1), str(desired_length+1), parent=address)
-            # tree = print_tree(tree)
-
             more_stns = []
             for station in stations:
                 rt_length = calculate_distance((station['latitude'], station['longitude']), current_coord)
@@ -176,9 +172,8 @@ def create_route():
                                    gmaps_url = gmaps_url,
                                    tree = TREE)
 
-    # if no networks found (could delete this if statement since we have return statement now)
-    if found_network == 'no':
-        return render_template('nonetwork.html')
+    # if no networks found
+    return render_template('nonetwork.html')
 
 
 @app.route('/viewroutes', methods=['POST'])
@@ -186,11 +181,6 @@ def view_route():
     selected = request.form.getlist('newlength')
     similar_checked = "similar" in selected
     longer_checked = "longer" in selected
-
-    # TREE = ['addy', [
-    #                     ['similar length', ['stn1', 'stn2']],
-    #                     ['longer length', ['stn3', 'stn4']]
-    #                 ]]
 
     return render_template('seeroutes.html', tree=TREE, similar_checked=similar_checked, longer_checked=longer_checked)
 
