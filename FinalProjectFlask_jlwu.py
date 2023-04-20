@@ -16,7 +16,7 @@ GEOCODING_KEY = 'pk.eyJ1IjoiamVzc2ljYWx3dSIsImEiOiJjbGdhMmJjYmIwdXAxM2VwOTNzNzhs
 GEOCODING_BASE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
 CITYBIKE_BASE_URL = 'http://api.citybik.es/v2/networks/'
 NETWORKS_CACHE_FILENAME = 'networks_cache.json'
-TREE = ()
+TREE = []
 
 def open_cache(cache_filename):
     ''' opens the cache file if it exists and loads the JSON into
@@ -157,12 +157,11 @@ def create_route():
                 if rt_length <= desired_length + 1.5 and rt_length >= desired_length + 0.5 and station['empty_slots'] > 0:
                     more_stns.append([station, rt_length])
             if len(more_stns) > 1 and len(stns_in_range) > 2:
-                TREE.append(
-                    address, (
-                        (str(desired_length), (stns_in_range[1], stns_in_range[2])),
-                        (str(desired_length + 1), (more_stns[0], more_stns[1]))
-                    )
-                )
+                TREE.append(address)
+                TREE.append([
+                        [str(desired_length), [stns_in_range[1], stns_in_range[2]]],
+                        [str(desired_length + 1), [more_stns[0], more_stns[1]]]
+                    ])
 
 
             return render_template('makeroute.html',
@@ -181,10 +180,12 @@ def create_route():
         return render_template('nonetwork.html')
 
 
-@app.route('/viewroute', methods=['POST'])
+@app.route('/viewroutes', methods=['POST'])
 def view_route():
+    similar_checked = "similar" in request.form['newlength']
+    longer_checked = "longer" in request.form['newlength']
 
-    return render_template('seeroutes.html')
+    return render_template('seeroutes.html', tree=TREE, similar_checked=similar_checked, longer_checked=longer_checked)
 
 if __name__ == '__main__':
     # creating list of bike networks if not yet cached

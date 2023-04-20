@@ -5,9 +5,11 @@
     <title>View More Routes</title>
 </head>
 <body>
-    <h1>Here are the additional routes you requested!</h1>
-    <p> </br>
-        <a href="/">Go back to the homepage</a>
-    </p>
+    <p>Here are the additional routes you requested starting from your current address, {{tree[0]}}!</p>
+    {% if similar_checked %}
+        <p>The following end stations are {{tree[1][0]}}km away: </p><br>
+    {% elif longer_checked %}
+        <p>The following end stations are {{tree[1][1]}}km away: </p>
+    {% endif %}
 </body>
 </html>
