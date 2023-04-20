@@ -4,6 +4,11 @@
 ##### Final Project                 #####
 #########################################
 
+# Note to grader!
+# To test different cities, here is a list of cities with bike-share systems:
+# https://en.wikipedia.org/wiki/List_of_bicycle-sharing_systems
+# I most often used cities such as Philadelphia, New York, and Paris to test my application. Enjoy!
+
 import requests
 import json
 import geopy.distance
@@ -92,8 +97,14 @@ def create_route():
     address = request.form['address']
     desired_length = request.form['desired_length']
 
-    if type(desired_length) != float or not city or not address or not desired_length:
+    if not city or not address or not desired_length:
         return render_template('moreinfo.html')
+
+    try:
+        desired_length = float(desired_length)
+    except:
+        return render_template('moreinfo.html')
+
 
     for place in bike_cities:
         if city.lower() in place:
@@ -117,10 +128,6 @@ def create_route():
                         closest_stn = station
 
             # create list of stations in range
-            try:
-                desired_length = float(request.form['desired_length'])
-            except:
-                desired_length = 1.0
             stns_in_range = []
             for station in stations:
                 rt_length = calculate_distance((station['latitude'], station['longitude']), current_coord)
@@ -131,7 +138,8 @@ def create_route():
             if stns_in_range == []:
                 return render_template('noendpoint.html',
                                    networkname = network_name,
-                                   closeststn = closest_stn)
+                                   closeststn = closest_stn,
+                                   lowestdistance = round(lowest_distance, 2))
 
             # suggest end station
             choice = stns_in_range[0]
