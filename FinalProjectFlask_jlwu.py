@@ -159,8 +159,8 @@ def create_route():
             if len(more_stns) > 1 and len(stns_in_range) > 2:
                 TREE.append(address)
                 TREE.append([
-                        [str(desired_length), [stns_in_range[1], stns_in_range[2]]],
-                        [str(desired_length + 1), [more_stns[0], more_stns[1]]]
+                        [str(desired_length), [stns_in_range[1][0]['name'], stns_in_range[2][0]['name']]],
+                        [str(desired_length + 1), [more_stns[0][0]['name'], more_stns[1][0]['name']]]
                     ])
 
 
@@ -173,7 +173,8 @@ def create_route():
                                    choice_distance = round(choice[1], 2),
                                    poi_name = poi_name,
                                    poi_type = poi_type,
-                                   gmaps_url = gmaps_url)
+                                   gmaps_url = gmaps_url,
+                                   tree = TREE)
 
     # if no networks found (could delete this if statement since we have return statement now)
     if found_network == 'no':
@@ -182,8 +183,14 @@ def create_route():
 
 @app.route('/viewroutes', methods=['POST'])
 def view_route():
-    similar_checked = "similar" in request.form['newlength']
-    longer_checked = "longer" in request.form['newlength']
+    selected = request.form.getlist('newlength')
+    similar_checked = "similar" in selected
+    longer_checked = "longer" in selected
+
+    # TREE = ['addy', [
+    #                     ['similar length', ['stn1', 'stn2']],
+    #                     ['longer length', ['stn3', 'stn4']]
+    #                 ]]
 
     return render_template('seeroutes.html', tree=TREE, similar_checked=similar_checked, longer_checked=longer_checked)
 

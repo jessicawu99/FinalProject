@@ -24,6 +24,7 @@
     <p>
         <a href="{{gmaps_url}}" target="_blank" rel="noopener noreferrer">Click here to view a Google Map of your suggested route!</a>
     </p>
+    {% if tree %}
     <p> Check one or both of the following to see more routes:
         <form action="/viewroutes" method="POST">
             <p>
@@ -33,6 +34,8 @@
             <input type="submit" value="Submit Form"/>
           </form>
     </p>
+    
+    {% endif %}
     <p>
         <a href="/">Go back to the homepage</a>
     </p>

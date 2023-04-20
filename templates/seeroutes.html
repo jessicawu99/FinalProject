@@ -6,10 +6,32 @@
 </head>
 <body>
     <p>Here are the additional routes you requested starting from your current address, {{tree[0]}}!</p>
-    {% if similar_checked %}
-        <p>The following end stations are {{tree[1][0]}}km away: </p><br>
+    {% if similar_checked and longer_checked %}
+        <p>The following end stations are {{tree[1][0][0]}}km away: </p>
+        <ul>
+            <li>{{tree[1][0][1][0]}}</li>
+            <li>{{tree[1][0][1][1]}}</li>
+          </ul>
+        <p>The following end stations are {{tree[1][1][0]}}km away: </p>
+        <ul>
+            <li>{{tree[1][1][1][0]}}</li>
+            <li>{{tree[1][1][1][1]}}</li>
+          </ul>
+    {% elif similar_checked %}
+        <p>The following end stations are {{tree[1][0][0]}}km away: </p>
+        <ul>
+            <li>{{tree[1][0][1][0]}}</li>
+            <li>{{tree[1][0][1][1]}}</li>
+          </ul>
     {% elif longer_checked %}
-        <p>The following end stations are {{tree[1][1]}}km away: </p>
+        <p>The following end stations are {{tree[1][1][0]}}km away: </p>
+        <ul>
+            <li>{{tree[1][1][1][0]}}</li>
+            <li>{{tree[1][1][1][1]}}</li>
+          </ul>
+    {% else %}
+        <p> You did not select to view additional routes. Thanks for using City Bike Explorer!</p>
     {% endif %}
+    <a href="/">Go back to the homepage</a>
 </body>
 </html>
