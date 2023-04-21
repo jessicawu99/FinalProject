@@ -11,7 +11,6 @@ The motivation behind my project is to encourage city exploration through dockin
 ## Required Python Packages
 <ul>
 <li>requests
-<li>json
 <li>geopy
 <li>flask
 <ul>
