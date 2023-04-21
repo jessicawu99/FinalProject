@@ -3,7 +3,7 @@ The motivation behind my project is to encourage city exploration through dockin
 
 ## Usage Tips
 <ul>
-<li>To test different cities, here is a list of cities with bike-share systems: https://en.wikipedia.org/wiki/List_of_bicycle-sharing_systems <br>
+<li>To test different cities, here is a map of cities with bike-share systems: http://api.citybik.es/v2/
 <li>I most often used cities such as Philadelphia, New York, and Paris to test my application.
 <li>When entering your address, make sure to include the city and state or country.
 </ul>
